@@ -8,6 +8,8 @@ In this repository, I have documented my hands on experience with Terrafrom for 
 
 With the usage of this example HCL code you can build topology documented by diagram below. This topology is extremly simplified for education purposes and rather cannot be used for production implementations. 
 
+![](terraform-oci-oke-devops.png)
+
 ## How to use code 
 
 ### Deploy Using Oracle Resource Manager
