@@ -1,12 +1,15 @@
-replicaCount: 3
+pod:
+  numberOfNginxReplicas: 3
 
-service:
-  type: LoadBalancer
-  port: 80
+loadBalancer:
+  lbShape: flexible
+  lbMinShape: 10
+  lbMaxShape: 100
+  lbListenerPort: 80
 
 image:
   repository: <NODE_SERVICE_REPO>
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  #   tag: ${BUILDRUN_HASH}
+  tag: 0.1.0-${BUILDRUN_HASH}
   #
