@@ -82,7 +82,6 @@ variable "build_source_collection_branch" {
 
 variable "build_source_collection_name" {
   default = "helm-foggykitchen-hello-world"
-#  default = "node_express"
 }
 
 variable "helm_repo_name" {
@@ -90,8 +89,7 @@ variable "helm_repo_name" {
 }
 
 variable "release_name" {
-  default = "helm-foggykitchen-hello-world"
-#  default = "node-express"  
+  default = "helm-foggykitchen-hello-world-chart"
 }
 
 variable "repository_default_branch" {
@@ -99,12 +97,10 @@ variable "repository_default_branch" {
 }
 
 variable "github_repo" {
-#  default = "https://github.com/oracle-devrel/helm-oci-devops-node-service.git"
   default = "https://github.com/mlinxfeld/helm-foggykitchen-hello-world.git"
 }
 
 variable "github_repo_name" {
-#  default = "node-express-remote"
   default = "helm-foggykitchen-hello-world-remote"
 }
 
@@ -113,7 +109,6 @@ variable "execute_build_pipeline" {
 }
 
 variable "deploy_helm_chart_name" {
-#  default = "node-service"
   default = "helm-foggykitchen-hello-world"
 }
 

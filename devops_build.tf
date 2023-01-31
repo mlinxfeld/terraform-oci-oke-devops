@@ -17,7 +17,7 @@ resource "oci_devops_build_pipeline" "FoggyKitchenDevOpsProjectBuildPipeline" {
         }
         items {
             name = "HELM_REPO_URL"
-            default_value = "oci://${local.ocir_docker_repository}/${local.ocir_namespace}/${var.helm_repo_name}"
+            default_value = "oci://${local.ocir_docker_repository}/${local.ocir_namespace}/${var.helm_repo_name}/${var.release_name}"
             description = "Helm repo URL to push helm packages."
         }
         items {
