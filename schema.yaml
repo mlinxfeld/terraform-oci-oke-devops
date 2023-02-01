@@ -1,0 +1,330 @@
+title: "OCI Container Engine for Kubernetes (aka OCI OKE) deployed with OCI DevOps Services"
+description: "FoggyKitchen.com - OCI Container Engine for Kubernetes (aka OCI OKE) deployed with OCI DevOps Services."
+stackDescription: "FoggyKitchen.com - OCI Container Engine for Kubernetes (aka OCI OKE) deployed with OCI DevOps Services."
+schemaVersion: 1.1.0
+version: "20201028"
+locale: "en"
+
+variableGroups:
+- title: "General Configuration"
+  visible: false
+  variables:
+  - tenancy_ocid
+  - region
+  - oci_service_gateway
+  - network_cidrs
+  - ocir_docker_repository
+  - lb_listener_port
+  - project_logging_config_retention_period_in_days
+
+- title: "Required Configuration"
+  visible: true  
+  variables:
+  - compartment_ocid
+  - availablity_domain_name
+  - node_pool_size
+  - ocir_user_name
+  - ocir_user_password
+  - show_advanced 
+
+- title: "OCIR Optional Configuration"
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - ocir_namespace
+  - ocir_repo_name
+
+- title: "OKE Optional Configuration"
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - kubernetes_version
+  - oke_node_shape
+  - flex_shape_memory
+  - flex_shape_ocpus
+  - oke_node_boot_volume_size_in_gbs
+  - oke_node_os_version
+  - cluster_name
+  - number_of_nginx_replicas
+
+- title: "DevOps Optional Configuration"
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - repository_name
+  - repository_branch
+  - build_source_collection_branch
+  - build_source_collection_name
+  - helm_repo_name
+  - release_name
+  - repository_default_branch
+  - github_repo
+  - github_repo_name
+  - execute_build_pipeline
+  - deploy_helm_chart_name
+
+variables:
+
+  show_advanced:
+    type: boolean
+    title: "Show advanced options?"
+    description: "Shows advanced options."
+    visible: true
+    default: false
+
+  # General Configuration
+  tenancy_ocid:
+    title: "Tenancy ID"
+    description: "The Oracle Cloud Identifier (OCID) for your tenancy"
+    type: string
+    required: true
+    visibile: false
+
+  region:
+    title: "Region"
+    description: "Choose Region where you deploy your Webserver"
+    type: oci:identity:region:name
+    required: true
+    visibile: true
+
+  compartment_ocid:
+    title: "Compartment OCID"
+    description: "Choose Comparment where you deploy your Webserver"
+    type: oci:identity:compartment:id
+    required: true
+    visibile: true
+
+  availablity_domain_name:
+    type: oci:identity:availabilitydomain:name
+    required: true
+    visibile: true
+    title: "Availability Domain"
+    description: "Choose Availability Domain where K8S Nodes will be deployed."
+    dependsOn:
+      regionName: ${region}
+      compartmentId: ${compartment_ocid}
+
+  node_pool_size:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 3
+    title: "How many K8S Nodes?"
+    description: "Choose number of K8S Nodes to be deployed."
+
+  ocir_user_name:
+    type: string
+    required: true
+    visibile: true
+    title: "OCIR username"
+    description: "Oracle Cloud Infrastructure Registry username (your OCI username)" 
+
+  ocir_user_password:
+    type: password
+    required: true
+    visibile: true
+    title: "OCIR user password"
+    description: "Oracle Cloud Infrastructure Registry user password (your OCI user authtoken)" 
+
+  # Optional Configuration
+
+  kubernetes_version:
+    type: enum
+    title: "K8S Version"
+    description: "Choose Kubernetes (K8S) version for OKE"
+    default: "v1.24.1"
+    required: false
+    enum: 
+      - "v1.24.1"
+      - "v1.23.4"
+      - "v1.22.5"
+
+  oke_node_shape:
+    type: oci:core:instanceshape:name
+    title: "K8S Nodes Shape"
+    description: "Choose a shape for your K8S nodes"
+    default: "VM.Standard.A1.Flex"
+    required: false
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+
+  flex_shape_ocpus:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 1
+    title: "K8S Nodes Flex Shape OCPUs"
+    description: "Choose number of OCPUs for Flex Shape."
+    visible:
+      and:
+        - or:
+          - eq:
+            - oke_node_shape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - oke_node_shape 
+            - "VM.Standard.E4.Flex"
+          - eq:
+            - oke_node_shape 
+            - "VM.Standard.A1.Flex"
+          - eq:
+            - oke_node_shape 
+            - "VM.Optimized3.Flex"
+
+  flex_shape_memory:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 6
+    title: "K8S Nodes Flex Shape Memory (GB)"
+    description: "Choose number GB for Flex Shape Memory."
+    visible:
+      and:
+        - or:
+          - eq:
+            - oke_node_shape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - oke_node_shape
+            - "VM.Standard.E4.Flex"
+          - eq:
+            - oke_node_shape 
+            - "VM.Standard.A1.Flex"
+          - eq:
+            - oke_node_shape 
+            - "VM.Optimized3.Flex"
+
+  oke_node_boot_volume_size_in_gbs:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 256
+    multipleOf: 1
+    default: 50
+    title: "What is the size of K8S node boot block volume (GB)?"
+    description: "Choose number of GB for the size of K8S node boot block volume."
+
+  cluster_name:
+    type: string
+    title: "K8S Cluster Name"
+    description: "Choose K8S Cluster Name"
+    required: false
+
+  oke_node_os_version:
+    type: enum
+    required: false
+    visible: true
+    title: "OKE Node OS version"
+    description: "Choose Operating System version that determines the operating system version for OKE Nodes."
+    default: "8.6"
+    enum:
+      - "7.9"  
+      - "8.5"
+      - "8.6"
+
+  number_of_nginx_replicas:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 10
+    title: "How many nginx replicas?"
+    description: "Choose number of nginx replicas to be deployed."
+    visible: 
+      and:
+        - deploy_nginx
+
+  ocir_namespace:
+    type: string
+    title: "OCIR Namespace"
+    description: "Choose OCIR Namespace."
+    required: false
+
+  ocir_repo_name:
+    type: string
+    title: "OCIR Repo Name"
+    description: "Choose OCIR Repo Name."
+    required: false
+
+  ocir_docker_repository:
+    type: string
+    title: "OCIR Docker Repository"
+    description: "Choose OCIR Docker Repository."
+    required: false
+
+  repository_name:
+    type: string
+    title: "Repository Name"
+    description: "Choose Repository Name"
+    required: false
+
+  repository_branch:
+    type: string
+    title: "Repository Branch"
+    description: "Choose Repository Branch"
+    required: false
+
+  build_source_collection_branch:
+    type: string
+    title: "Build Source Collection Branch"
+    description: "Choose Build Source Collection Branch"
+    required: false
+
+  build_source_collection_name:
+    type: string
+    title: "Build Source Collection Name"
+    description: "Choose Build Source Collection Name"
+    required: false
+
+  helm_repo_name:
+    type: string
+    title: "Helm Repository Name"
+    description: "Choose Helm Repository Name"
+    required: false
+
+  release_name:
+    type: string
+    title: "Release Name"
+    description: "Choose Release Name"
+    required: false
+
+  repository_default_branch:
+    type: string
+    title: "Repository Default Branch"
+    description: "Choose Repository Default Branch"
+    required: false
+
+  github_repo:
+    type: string
+    title: "GitHub Repository URL"
+    description: "Choose GitHub Repository URL"
+    required: false
+
+  github_repo_name:
+    type: string
+    title: "GitHub Repository Name"
+    description: "Choose GitHub Repository Name"
+    required: false
+
+  execute_build_pipeline:
+    type: boolean
+    title: "Execute Build Pipeline automatically?"
+    description: "Choose if you want to execute Build Pipeline automatically."
+    visible: true
+    default: false
+
+  deploy_helm_chart_name:
+    type: string
+    title: "Deploy Helm Chart Name"
+    description: "Choose Deploy Helm Chart Name"
+    required: false
