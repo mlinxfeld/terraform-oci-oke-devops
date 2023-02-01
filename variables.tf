@@ -11,10 +11,6 @@ variable "availablity_domain_name" {
   default = ""
 }
 
-variable "ssh_public_key" {
-  default = ""
-}
-
 variable "kubernetes_version" {
   default = "v1.24.1"
 }
@@ -47,10 +43,6 @@ variable "cluster_name" {
   default = "FoggyKitchenOKECluster"
 }
 
-variable "lb_nsg" {
-  default = true
-}
-
 variable "ocir_namespace" {
   default = ""
 }
@@ -63,12 +55,7 @@ variable "ocir_docker_repository" {
   default = ""
 }
 
-variable "ocir_user_email" {
-  default = "martin.linxfeld@foggykitchen.com"
-}
-
 variable "repository_name" {
-#  default = "nodejs"
   default = "helm-foggykitchen-hello-world" 
 }
 
